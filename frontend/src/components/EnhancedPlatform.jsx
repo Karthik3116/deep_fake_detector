@@ -84,7 +84,7 @@ const EnhancedPlatform = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <div className="bg-white border-b">
+      {/* <div className="bg-white border-b">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
@@ -95,8 +95,8 @@ const EnhancedPlatform = () => {
                     key={tab}
                     onClick={() => setActiveTab(tab)}
                     className={`px-3 py-2 rounded-md ${activeTab === tab
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50'
                       }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -116,7 +116,7 @@ const EnhancedPlatform = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
@@ -165,8 +165,8 @@ const EnhancedPlatform = () => {
                         </div>
                       </div> */}
 
-                      {/* Display creator info */}
-                      {/* <div className="mt-6">
+          {/* Display creator info */}
+          {/* <div className="mt-6">
                         <h4 className="text-lg font-semibold">{post.creator.username}</h4>
                         <p className="text-gray-600">Score: {post.creator.score}</p>
                       </div>
@@ -192,12 +192,11 @@ const EnhancedPlatform = () => {
                         <span>{post.timesago}</span>
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      post.verified 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`} onClick={() => post.verified && handleVerifyClick(post)} >
-                      
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${post.verified
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                      }`} onClick={() => post.verified && handleVerifyClick(post)} >
+
                       {post.verified ? (
                         <div className="flex items-center">
                           <CheckCircle className="h-4 w-4 mr-1" />
@@ -209,25 +208,37 @@ const EnhancedPlatform = () => {
                           False
                         </div>
                       )}
-                      
+
                     </div>{showSummary && (
-              <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800">
-                <p className="font-semibold">Summary:</p>
-                <p>{post.summary}</p>
-              </div>
-            )}
+                      <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800">
+                        <p className="font-semibold">Summary:</p>
+                        <p>{post.summary}</p>
+                      </div>
+                    )}
 
                   </div>
                   {post.video && (
-  <div className="mt-4">
-    <video controls className="w-full max-w-md max-h-64 rounded-md shadow-md">
-      <source src={post.video} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-)}
+                    <div className="mt-4">
+                      <video controls className="w-full max-w-md max-h-64 rounded-md shadow-md">
+                        <source src={post.video} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
 
-      
+                  {post.image && (
+                    <div className="mt-4">
+                      <img
+                        src={post.image}
+                        alt="Post image"
+                        className="w-full max-w-md max-h-64 rounded-md shadow-md"
+                      />
+                    </div>
+                  )}
+
+
+
+
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center">
@@ -241,9 +252,6 @@ const EnhancedPlatform = () => {
                         Score: {post.creator.score}
                       </div>
                     </div>
-
-                    
-                    
                     {/* <div className="flex items-center space-x-4 text-gray-500">
                       <div className="flex items-center">
                         <Eye className="h-4 w-4 mr-1" />
@@ -258,6 +266,22 @@ const EnhancedPlatform = () => {
                         {news.engagement.likes}
                       </div>
                     </div> */}
+                  </div>
+                  <div className="mt-4 flex space-x-4">
+                    <button
+                      onClick={() => handleLike(post)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    >
+
+
+                      Like
+                    </button>
+                    <button
+                      onClick={() => handleDislike(post)}
+                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                    >
+                      Dislike
+                    </button>
                   </div>
                 </div>
               </div>

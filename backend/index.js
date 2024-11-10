@@ -102,7 +102,44 @@ app.post('/creatorpost', async (req, res) => {
     res.status(500).json({ error: 'Failed to save post' });
   }
 });
+app.post('/creatorpost/image', async (req, res) => {
+  try {
+    const { videopath, videoTitle, username, description, score, verified } = req.body;
+    console.log(req.body);
 
+    // Find the creator (user) by username
+    let creator = await Creator.findOne({ username });
+
+    if (!creator) {
+      return res.status(404).json({ error: 'Creator not found' });
+    }
+
+    // Create a new post
+    const newPost = {
+      title: videoTitle,
+      description:'',
+      image: videopath,  // You can save the path or URL here
+      postScore: score,
+      verified,
+    };
+
+    // Add the new post to the creator's posts array
+    creator.posts.push(newPost);
+
+    const totalScore = creator.posts.reduce((sum, post) => sum + post.postScore, 0);
+    const averageScore = totalScore / creator.posts.length;
+
+    creator.score = Math.round(averageScore);
+    // Save the creator with the new post
+    await creator.save();
+
+    // Send a success response
+    res.status(200).json({ success: 'Post added successfully', post: newPost });
+  } catch (error) {
+    console.error('Error saving post:', error);
+    res.status(500).json({ error: 'Failed to save post' });
+  }
+});
 app.post('/creatorposttext', async (req, res) => {
   const { username, videoTitle, description, video, postScore, summary, verified } = req.body;
 

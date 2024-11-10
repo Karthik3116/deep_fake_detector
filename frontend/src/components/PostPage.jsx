@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const PostPage = () => {
-  const { type } = useParams(); // Extract the 'type' parameter from the URL
+  const { type } = useParams();
   const [video, setVideo] = useState(null);
   const [image, setImage] = useState(null);
   const [article, setArticle] = useState('');
@@ -14,137 +14,130 @@ const PostPage = () => {
   const [verified, setVerified] = useState(false);
   const [response, setResponse] = useState(null);
   const [response2, setResponse2] = useState(null);
-
   const [videopath, setVideopath] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
 
     const formData = new FormData();
 
-    if (type === 'image' && image) formData.append('image', image);
-   
+    if (type === 'image' && image) {
+      formData.append('image', image)
+      try {
+        const res = await axios.post('http://localhost:8080/verify_image_article', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        console.log("i have pressed a button");
+        const postData = {
+          videopath,
+          videoTitle,
+          username: "vstuart2",
+          description,
+          score: Math.floor(res.probability * 100),
+          verified: res.prediction === "Fake" ? false : true,
+        };
+        try {
+          await axios.post('http://localhost:3000/creatorpost/image', postData, {
+            headers: { 'Content-Type': 'application/json' }
+          });
+          setResponse2((Response) => ({
+            ...Response,
+            success: 'Data posted to MongoDB successfully!',
+          }));
+          setVideoTitle('');
+          setVideo('');
+          setVideopath('');
+
+        } catch (error) {
+          console.error('Error posting data:', error);
+          setResponse({ error: 'Failed to submit data' });
+        }
+      } catch (error) {
+        console.error('Error posting data from model:', error);
+        setResponse({ error: 'Failed to submit data from model' });
+      }
+
+    };
+
     if (type === 'video' && video) {
       formData.append('video', video);
       try {
         const res = await axios.post('http://127.0.0.1:5000/predict', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        setResponse(res.data);
-        console.log("flask", res.data);
-       
-      } catch (error) {
-        console.error('Error posting data from model:', error);
-        setResponse({ error: 'Failed to submit data  from model' });
-      }
-
-
-      try {
-        console.log("i have pressed a button")
+        console.log("i have pressed a button");
         const postData = {
-          videopath, // Or the actual path if available after uploading
+          videopath,
           videoTitle,
           username: "vstuart2",
           description,
-          score: Math.floor(response.probability * 100),
-          verified: response.prediction === "Fake" ? false : true,
-          // score :90,
-          // verified : true
+          score: Math.floor(res.probability * 100),
+          verified: res.prediction === "Fake" ? false : true,
         };
-  
-        await axios.post('http://localhost:3000/creatorpost', postData, {
-          headers: { 'Content-Type': 'application/json' }
-        });
-        setResponse2((Response) => ({
-          ...Response,
-          success: 'Data posted to MongoDB successfully!',
-        }));
-      } catch (error) {
-        console.error('Error posting data:', error);
-        setResponse({ error: 'Failed to submit data' });
-      }
-    }
+        try {
+          await axios.post('http://localhost:3000/creatorpost', postData, {
+            headers: { 'Content-Type': 'application/json' }
+          });
+          setResponse2((Response) => ({
+            ...Response,
+            success: 'Data posted to MongoDB successfully!',
+          }));
+          setVideoTitle('');
+          setVideo('');
+          setVideopath('');
 
-    // if (type === 'text' && article) {
-    //   formData.append('user_article', article);
-    //   try {
-    //     const res = await axios.post('http://127.0.0.1:5100/verify_article', formData, {
-    //       headers: { 'Content-Type': 'application/json' }
-    //     });
-    //     setResponse(res.data);
-    //     console.log("flask", res.data);
-        
-    //   } catch (error) {
-    //     console.error('Error posting data from model:', error);
-    //     setResponse({ error: 'Failed to submit data  from model' });
-        
-    //   }
-
-    //   try {
-    //     console.log("i have pressed a button")
-    //     const postData = {
-    //       videopath, // Or the actual path if available after uploading
-    //       title:'',
-    //       username: "vstuart2",
-    //       description:article,
-    //       score: Math.floor(response.average_similarity_score * 100),
-    //       verified:Math.floor(response.average_similarity_score * 100)<= 50 ? false : true,
-    //       summary:response.summary,
-    //       // score :90,
-    //       // verified : true
-    //     };
-  
-    //     await axios.post('http://localhost:3000/creatorposttext', postData, {
-    //       headers: { 'Content-Type': 'application/json' }
-    //     });
-    //     setResponse2((Response) => ({
-    //       ...Response,
-    //       success: 'Data posted to MongoDB successfully!',
-    //     }));
-    //   } catch (error) {
-    //     console.error('Error posting data:', error);
-    //     setResponse({ error: 'Failed to submit data' });
-    //   }
-    // }
-
-    if (type === 'text' && article) {
-      formData.append('user_article', article);
-      try {
-        const res = await axios.post('http://127.0.0.1:8080/verify_article', {user_article: article}, {
-          headers: { 'Content-Type': 'application/json' }
-        })
-        setResponse(res.data);
-        console.log(response);
+        } catch (error) {
+          console.error('Error posting data:', error);
+          setResponse({ error: 'Failed to submit data' });
+        }
       } catch (error) {
         console.error('Error posting data from model:', error);
         setResponse({ error: 'Failed to submit data from model' });
       }
 
-      try {
-        console.log("i have pressed a button")
-        const postData = {
-          videopath, // Or the actual path if available after uploading
-          videoTitle, // Add title logic if applicable
-          username: "vstuart2", // Replace with dynamic username if needed
-          description: article,
-          postScore: response.average_similarity_score,
-          verified: response.average_similarity_score<= 50 ? false : true,
-          summary: response.summary, // Assuming response includes a summary
-        };
 
-        await axios.post('http://localhost:3000/creatorposttext', postData, {
+    }
+
+    if (type === 'text' && article) {
+      formData.append('user_article', article);
+      try {
+        const res = await axios.post('http://localhost:8080/verify_article', { user_article: article }, {
           headers: { 'Content-Type': 'application/json' }
         });
-        setResponse2((Response) => ({
-          ...Response,
-          success: 'Data posted to MongoDB successfully!',
-        }));
+        const postData = {
+          videopath,
+          videoTitle,
+          username: "vstuart2",
+          description: article,
+          postScore: res.data.authenticity_score,
+          verified: res.data.authenticity_score <= 50 ? false : true,
+          summary: res.data.summary,
+        };
+        console.log('postdata', postData);
+
+        try {
+          await axios.post('http://localhost:3000/creatorposttext', postData, {
+            headers: { 'Content-Type': 'application/json' }
+          });
+          setResponse2((Response) => ({
+            ...Response,
+            success: 'Data posted to MongoDB successfully!',
+          }));
+          setVideoTitle('');
+          setArticle('');
+        } catch (error) {
+          console.error('Error posting data:', error);
+          setResponse({ error: 'Failed to submit data' });
+        }
       } catch (error) {
-        console.error('Error posting data:', error);
-        setResponse({ error: 'Failed to submit data' });
+        console.error('Error posting data from model:', error);
+        setResponse({ error: 'Failed to submit data from model' });
       }
     }
-    
+
+    setIsLoading(false); // End loading
   };
 
   return (
@@ -163,25 +156,45 @@ const PostPage = () => {
                 rows="1"
               />
               <label className="text-lg">Upload Video</label>
-              <input type="file" onChange={(e) => {
+              <input type="file"accept="video/*"  onChange={(e) => {
                 setVideo(e.target.files[0]);
                 if (e.target.files[0]) {
-                  setVideopath(e.target.files[0].name); // Set the filename as the video title
+                  setVideopath(e.target.files[0].name);
                 }
               }} className="p-2 border rounded" />
               {video && video.name && (
-                <p className="text-sm mt-2">Selected File: {video.name}</p> // Display the filename
+                <p className="text-sm mt-2">Selected File: {video.name}</p>
               )}
+              <button type="submit" className="bg-blue-600 text-white px-6 py-3 rounded-lg" disabled={isLoading}>
+                {isLoading ? 'Submitting...' : 'Submit'}
+              </button>
             </div>
           )}
 
           {type === 'image' && (
             <div className="flex flex-col">
-
-              <label className="text-lg">Upload Image</label>
-
-              <input type="file" onChange={(e) => setImage(e.target.files[0])} className="p-2 border rounded" />
+              <label className="text-lg">Title</label>
+              <textarea
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+                className="p-2 border rounded"
+                rows="1"
+              />
+              <label className="text-lg">Upload Video</label>
+              <input type="file"   onChange={(e) => {
+                setImage(e.target.files[0]);
+                if (e.target.files[0]) {
+                  setVideopath(e.target.files[0].name);
+                }
+              }} className="p-2 border rounded" />
+              {video && video.name && (
+                <p className="text-sm mt-2">Selected File: {video.name}</p>
+              )}
+              <button type="submit" className="bg-blue-600 text-white px-6 py-3 rounded-lg" disabled={isLoading}>
+                {isLoading ? 'Submitting...' : 'Submit'}
+              </button>
             </div>
+
           )}
 
           {type === 'text' && (
@@ -203,12 +216,14 @@ const PostPage = () => {
             </div>
           )}
 
-          <button type="submit" className="bg-blue-600 text-white px-6 py-3 rounded-lg">Submit</button>
+          <button type="submit" className="bg-blue-600 text-white px-6 py-3 rounded-lg" disabled={isLoading}>
+            {isLoading ? 'Submitting...' : 'Submit'}
+          </button>
         </form>
 
-        {response && (
+        {response2 && (
           <div className="mt-6">
-            {response.error ? (
+            {response2.error ? (
               <p className="text-red-600">{response.error}</p>
             ) : (
               <p className="text-green-600">Post submitted successfully!</p>
@@ -221,3 +236,5 @@ const PostPage = () => {
 };
 
 export default PostPage;
+
+

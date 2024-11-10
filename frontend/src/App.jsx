@@ -3,7 +3,7 @@
 // import viteLogo from '/vite.svg'
 // import './App.css'
 // import LandingPage from './components/LandingPage'
-import EnhancedPlatform from './components/EnhancedPlatform'
+// import EnhancedPlatform from './components/EnhancedPlatform'
 
 // function App() {
 //   const [count, setCount] = useState(0)
@@ -31,22 +31,49 @@ import EnhancedPlatform from './components/EnhancedPlatform'
 // export default App
 
 
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import CreatorDashboard from './components/CreatorDashboard';
+// import PostPage from './components/PostPage';
+// import LandingPage from './components/LandingPage'
+
+// function App() {
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path='/' element={<LandingPage />} />
+//         <Route path='/news' element={<EnhancedPlatform />} />
+//         <Route path="/creator" element={<CreatorDashboard />} />
+//         <Route path="/post/:type" element={<PostPage />} />
+//       </Routes>
+//     </Router>
+//   );
+// }
+
+// export default App;
+
+
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CreatorDashboard from './components/CreatorDashboard';
 import PostPage from './components/PostPage';
 import LandingPage from './components/LandingPage'
+import EnhancedPlatform from './components/EnhancedPlatform';
+import Nav from './components/Nav';
+
 
 function App() {
   return (
     <Router>
+      <Nav/>
       <Routes>
-        <Route path='/' element={<LandingPage />} />
-        <Route path='/news' element={<EnhancedPlatform />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/news" element={<EnhancedPlatform />} />
         <Route path="/creator" element={<CreatorDashboard />} />
         <Route path="/post/:type" element={<PostPage />} />
       </Routes>
+
     </Router>
   );
 }
 
-export default App;
+export default App;
